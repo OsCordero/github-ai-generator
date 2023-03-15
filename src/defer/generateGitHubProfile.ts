@@ -119,7 +119,7 @@ export async function getGithubInfo(
 
 export async function generateGitHubProfile(githubUsername: string) {
   const { languages, location, stars } = await getGithubInfo(githubUsername);
-  const prompt = `Write a funny five sentence GitHub profile description with 2 emojis maximum, with the following information:
+  const prompt = `Write a funny six sentence GitHub profile description with 2 emojis maximum, with the following information:
 - Lives in ${location}
 - Wrote ${Object.entries(languages)
     .map(([name, count]) =>
