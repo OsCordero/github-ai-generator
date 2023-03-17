@@ -4,12 +4,9 @@ import { useMutation, useQuery } from "react-query";
 
 export default function Home() {
   const [userName, setUserName] = useState("");
+  const [execId, setExecId] = useState("");
 
-  const {
-    mutate,
-    isLoading,
-    data: aiData,
-  } = useMutation(
+  const { mutate } = useMutation(
     async () => {
       const response = await fetch(`/api/githubProfile/${userName}`, {
         method: "POST",
@@ -18,11 +15,31 @@ export default function Home() {
       return response.json();
     },
     {
-      onSuccess: (data) => {
-        console.log("onSuccess", data);
+      onSuccess: ({ id }) => {
+        setExecId(id);
       },
     }
   );
+
+  const { data } = useQuery(
+    "queryJobStatus",
+    async () => {
+      const response = await fetch(`/api/githubProfile/${execId}`);
+
+      return response.json();
+    },
+    {
+      enabled: !!execId,
+      refetchInterval: 1000,
+      onSuccess: (data) => {
+        if (data.result || data.state === "cancelled") {
+          setExecId("");
+        }
+      },
+    }
+  );
+
+  const hasStarted = data?.state === "started" || data?.state === "created";
 
   return (
     <main className="container">
@@ -35,23 +52,23 @@ export default function Home() {
           onChange={(e) => setUserName(e.target.value)}
           className="input"
           placeholder="Enter your GitHub username"
-          disabled={isLoading}
+          disabled={hasStarted}
         />
         <button
           onClick={() => mutate()}
           className="buttonPrimary"
-          disabled={isLoading}
+          disabled={hasStarted}
         >
-          {isLoading ? "Generating ..." : "Generate"}
+          {hasStarted ? "Generating ..." : "Generate"}
         </button>
       </div>
-      {aiData && (
+      {data && data.result && (
         <div className="result codeblock-container">
-          <div className="codeblock-content">{aiData}</div>
+          <div className="codeblock-content">{data.result}</div>
         </div>
       )}
 
-      {isLoading && (
+      {hasStarted && (
         <div className="lds-ring">
           <div />
           <div />

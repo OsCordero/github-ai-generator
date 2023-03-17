@@ -1,4 +1,4 @@
-import { generateGitHubProfile } from "@/defer/generateGitHubProfile";
+import generateGitHubProfile from "@/defer/generateGitHubProfile";
 import { getExecution } from "@defer/client";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -15,5 +15,5 @@ export async function GET(
   { params }: { params: { usernameOrExecId: string } }
 ) {
   const res = await getExecution(params.usernameOrExecId);
-  return NextResponse.json({});
+  return NextResponse.json(res);
 }

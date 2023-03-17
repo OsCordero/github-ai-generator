@@ -144,3 +144,5 @@ export async function generateGitHubProfile(githubUsername: string) {
 
   return completion.data.choices[0].text;
 }
+
+export default defer(generateGitHubProfile);
